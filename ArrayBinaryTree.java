@@ -151,23 +151,71 @@ public class ArrayBinaryTree<E> extends AbstractBinaryTree<E>
 		 }
 	}
 	
+	  public E remove(Position<E> p) throws IllegalArgumentException {
+		  if (!(p instanceof Node))
+		      throw new IllegalArgumentException("Not valid position type");
+		  
+		  if (numChildren(p) == 2)
+		      throw new IllegalArgumentException("p has two children");
+		 
+		  
+		  Node<E> node = (Node<E>) p;
+		  if(isExternal(p)) {
+			  arr[node.getIndex()]=null;
+		  }
+		  Node<E> child = (left(node) != null ?(Node <E>)left(node) : (Node<E>)right(node) );
+		   
+		    if (node == root()) {
+		    	arr[0]=child;
+		    	
+		    }
+		      	
+	      Queue<Position<E>> fringe = new LinkedQueue<>();
+	      fringe.enqueue(child);                 // start with the node
+	      while (!fringe.isEmpty()) {
+	    	  
+	        Position<E> parent = fringe.dequeue();     // remove from front of the queue
+	        Node<E> grandparent=(Node <E>)parent(parent);
+	        for (Position<E> c : children(parent)) {
+	          if(left(parent)==c) {
+	        	  int index=grandparent.getIndex();
+	        	  Node <E> ch=(Node<E>)c;
+	        	  arr[2*index+1]=c;
+	        	  fringe.enqueue(c);				// add children to back of queue
+	          }
+	          else {
+	        	  int index=grandparent.getIndex();
+	        	  Node <E> ch=(Node<E>)c;
+	        	  arr[2*index+2]=c;
+	        	  fringe.enqueue(c);				// add children to back of queue
+	          }
+	        }  	
+	        
+	      }
+	      size--;
+    
+		    return node.getElement();
+		}  
+	
 	public static void main(String [] args) {
-		ArrayBinaryTree <Integer>abt=new ArrayBinaryTree<Integer>(); 
+		ArrayBinaryTree <Integer>abt=new ArrayBinaryTree<Integer>(120); 
 		Position <Integer> p1=abt.addRoot(14);
 		Position <Integer> p2=abt.addLeft(p1, 34);
 		Position <Integer> p3=abt.addRight(p1, 55);
 		Position <Integer> p4=abt.addLeft(p2, 17);
+		Position <Integer> p7=abt.addLeft(p4, 44);
+		Position <Integer> p8=abt.addRight(p4, 88);
 		Position <Integer> p5=abt.addLeft(p3, 13);
 		Position <Integer> p6=abt.addRight(p3, 19);
-		Iterator <Integer> it=abt.iterator();
-		while(it.hasNext()) {
-			System.out.println(it.next());
-		}
-		/*	
+		abt.remove(p2);
+		
+	
 		for(Position <Integer> p:abt.breadthfirst()) {
 			System.out.println(p.getElement());
 		}
-		*/
+		
+		
+		
 		
 	}
 	@Override
