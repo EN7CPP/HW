@@ -162,43 +162,56 @@ public class ArrayBinaryTree<E> extends AbstractBinaryTree<E>
 		  Node<E> node = (Node<E>) p;
 		  if(isExternal(p)) {
 			  arr[node.getIndex()]=null;
+			  return node.getElement();
 		  }
 		  Node<E> child = (left(node) != null ?(Node <E>)left(node) : (Node<E>)right(node) );
 		   
-		    if (node == root()) {
-		    	arr[0]=child;
-		    	
-		    }
+		  arr[node.getIndex()]=child;
 		      	
 	      Queue<Position<E>> fringe = new LinkedQueue<>();
 	      fringe.enqueue(child);                 // start with the node
 	      while (!fringe.isEmpty()) {
-	    	  
-	        Position<E> parent = fringe.dequeue();     // remove from front of the queue
-	        Node<E> grandparent=(Node <E>)parent(parent);
+	    	
+	    	
+	        Node<E> parent = (Node<E>)fringe.dequeue();     // remove from front of the queue
+	        
 	        for (Position<E> c : children(parent)) {
-	          if(left(parent)==c) {
-	        	  int index=grandparent.getIndex();
-	        	  Node <E> ch=(Node<E>)c;
-	        	  arr[2*index+1]=c;
-	        	  fringe.enqueue(c);				// add children to back of queue
-	          }
-	          else {
-	        	  int index=grandparent.getIndex();
-	        	  Node <E> ch=(Node<E>)c;
-	        	  arr[2*index+2]=c;
-	        	  fringe.enqueue(c);				// add children to back of queue
-	          }
-	        }  	
+	        	
+	        	fringe.enqueue(c);
+	        }
+	        if(parent==child) {
+	        	if(isExternal(parent))arr[parent.getIndex()]=null;
+	        	parent.setIndex(node.getIndex());
+	        }
+	        else {
+	        	
+	        	int index=((parent.getIndex()-1)/2);
+	        	int newInd=((Node<E>)arr[index]).getIndex();
+	        	if(parent.getIndex()%2==1) {
+	        		arr[2*newInd+1]=parent;
+	        		if(isExternal(parent))arr[parent.getIndex()]=null;
+	        		parent.setIndex(2*newInd+1);
+	        	}
+	        	else {
+	        		arr[2*newInd+2]=parent;
+	        		if(isExternal(parent))arr[parent.getIndex()]=null;
+	        		parent.setIndex(2*newInd+2);
+	        	}
+	        }
 	        
 	      }
 	      size--;
     
-		    return node.getElement();
-		}  
+		  return node.getElement();
+	}
+	@Override
+	public int size() {
+		return this.size;
+	}
+	
 	
 	public static void main(String [] args) {
-		ArrayBinaryTree <Integer>abt=new ArrayBinaryTree<Integer>(120); 
+		ArrayBinaryTree <Integer>abt=new ArrayBinaryTree<Integer>(30); 
 		Position <Integer> p1=abt.addRoot(14);
 		Position <Integer> p2=abt.addLeft(p1, 34);
 		Position <Integer> p3=abt.addRight(p1, 55);
@@ -207,9 +220,10 @@ public class ArrayBinaryTree<E> extends AbstractBinaryTree<E>
 		Position <Integer> p8=abt.addRight(p4, 88);
 		Position <Integer> p5=abt.addLeft(p3, 13);
 		Position <Integer> p6=abt.addRight(p3, 19);
-		abt.remove(p2);
+		Position <Integer> p15=abt.addLeft(p7, 129);
+		abt.remove(p7);
 		
-	
+		
 		for(Position <Integer> p:abt.breadthfirst()) {
 			System.out.println(p.getElement());
 		}
@@ -217,10 +231,6 @@ public class ArrayBinaryTree<E> extends AbstractBinaryTree<E>
 		
 		
 		
-	}
-	@Override
-	public int size() {
-		return this.size;
 	}
 	
 	
